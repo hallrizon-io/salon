@@ -3,5 +3,5 @@ from .views import CompanyListView
 
 
 urlpatterns = [
-    path('api/v1/companies/', CompanyListView.as_view()),
+    path('companies/', CompanyListView.as_view()),
 ]

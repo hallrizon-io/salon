@@ -3,5 +3,5 @@ from .views import MasterListView
 
 
 urlpatterns = [
-    path('api/v1/masters/', MasterListView.as_view()),
+    path('masters/', MasterListView.as_view()),
 ]

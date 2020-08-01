@@ -1,0 +1,12 @@
+# sudo docker-compose -f postgres.yml up -d
+version: '2'
+services:
+  db_test2:
+    image: postgres:10
+    hostname: 127.0.0.1
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"

@@ -3,5 +3,5 @@ from .views import ReceptionListView
 
 
 urlpatterns = [
-    path('api/v1/orders/', ReceptionListView.as_view()),
+    path('orders/', ReceptionListView.as_view()),
 ]

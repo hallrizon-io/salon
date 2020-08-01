@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from .models import Client
+from .models import Profile
 
 
-class ClientListSerializer(serializers.ModelSerializer):
+class ProfileListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Client
+        model = Profile
         fields = ('username', 'first_name', 'last_name', 'birth_date', 'email',
                  'last_login', 'is_active', 'date_joined')

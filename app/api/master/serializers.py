@@ -7,4 +7,10 @@ class MasterListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Master
-        exclude = ('id',)
+        fields = '__all__'
+
+
+class MasterDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Master
+        fields = ('id', 'name', 'surname', 'years_old')

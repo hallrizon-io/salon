@@ -21,17 +21,18 @@ class MasterListView(APIView):
 class MasterBookedHoursView(APIView):
     def get(self, request, pk):
         try:
-            get_object_or_404(Master, pk=pk)
+            master = get_object_or_404(Master, pk=pk)
 
             today = date.today().isoformat()
             from_date = datetime.fromisoformat(request.query_params.get('date', today))
             to_date = from_date + timedelta(days=1)
 
-            master_booked_records = Reception.objects.filter(
-                master=pk, status=Reception.Status.ACCEPTED,
+            receptions = master.receptions.filter(
+                status=Reception.Status.ACCEPTED,
                 time__range=(from_date, to_date)
             )
-            serializer = BookedHoursSerializer(master_booked_records, many=True)
+
+            serializer = BookedHoursSerializer(receptions, many=True)
             response = Response(serializer.data)
         except:
             response = Response({'detail': 'Incorrect Date'}, status=status.HTTP_400_BAD_REQUEST)

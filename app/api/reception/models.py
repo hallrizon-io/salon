@@ -14,9 +14,9 @@ class Reception(models.Model):
     description = models.CharField(max_length=255)
     time = models.DateTimeField()
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACCEPTED)
-    client = models.ForeignKey(Profile, on_delete=models.DO_NOTHING, related_name='client')
-    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='company')
-    master = models.ForeignKey(Master, on_delete=models.DO_NOTHING, related_name='master')
+    client = models.ForeignKey(Profile, on_delete=models.DO_NOTHING, related_name='receptions')
+    company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='receptions')
+    master = models.ForeignKey(Master, on_delete=models.DO_NOTHING, related_name='receptions')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

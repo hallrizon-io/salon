@@ -6,7 +6,7 @@ from django.db import models
 class Company(models.Model):
     name = models.CharField(max_length=30)
     address = models.CharField(max_length=100)
-    image = models.ImageField(upload_to="companies/")
+    image = models.ImageField(upload_to="image/companies/", blank=True)
 
     def __str__(self):
         return self.name

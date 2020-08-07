@@ -109,3 +109,4 @@ ENV/
 
 # files
 *.png
+app/static/databases

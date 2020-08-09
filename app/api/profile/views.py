@@ -19,7 +19,7 @@ class ProfileAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         response = {}
-        serializer = CreateProfileSerializer(data=request.data)
+        serializer = CreateProfileSerializer(Profile.UserType.CLIENT, data=request.data)
         client_ip = IP.get_client_ip(request)
         status_code = status.HTTP_200_OK
         try:

@@ -31,7 +31,7 @@ class ProfileListSerializer(serializers.ModelSerializer):
 class ProfileDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ('id', 'first_name', 'last_name')
+        fields = ('id', 'first_name', 'last_name', 'age')
 
 
 class CreateProfileSerializer(serializers.ModelSerializer):
@@ -54,6 +54,10 @@ class CreateProfileSerializer(serializers.ModelSerializer):
             fields=('first_name', 'last_name'),
         )]
 
+    def __init__(self, user_type, **kwargs):
+        self.user_type = user_type
+        super(CreateProfileSerializer, self).__init__(**kwargs)
+
     def validate_first_name(self, value):
         if any(map(str.isdigit, value)):
             raise serializers.ValidationError('The first name contains numbers')
@@ -75,4 +79,6 @@ class CreateProfileSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        return Profile.objects.create_user(**validated_data, username=validated_data['email'])
+        return Profile.objects.create_user(
+            **validated_data, username=validated_data['email'], user_type=self.user_type
+        )

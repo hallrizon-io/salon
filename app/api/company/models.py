@@ -2,7 +2,6 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 # Create your models here.
-from django.utils.crypto import get_random_string
 
 
 class Company(models.Model):
@@ -19,10 +18,6 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
-
-    def save(self, *args, **kwargs):
-        self.enter_code = get_random_string(length=5).lower()
-        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = "Company"

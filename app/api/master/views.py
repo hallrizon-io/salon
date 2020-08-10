@@ -27,7 +27,7 @@ class MasterAPIView(APIView):
 
     def post(self, request, *args, **kwargs):
         profile_serializer = CreateProfileSerializer(
-            Profile.UserType.MASTER, data=request.data.get('profile')
+            user_type=Profile.UserType.MASTER, data=request.data.get('profile')
         )
         work_types_serializer = WorkTypeListSerializer(data=request.data)
         company_serializer = CreateCompanySerializer(data=request.data.get('company'))
@@ -43,13 +43,11 @@ class MasterAPIView(APIView):
                         Company, enter_code=request.data.get('company').get('enter_code')
                     )
 
-                profile = profile_serializer.save()
-                master = Master.objects.create(profile=profile)
-
-                work_types = work_types_serializer.save()
-
-                master.company.add(company)
-                master.work_types.add(*work_types)
+                master = Master.objects.create_master(
+                    profile=profile_serializer.save(),
+                    company=company,
+                    work_types=work_types_serializer.save()
+                )
 
             response = {
                 'id': master.id,

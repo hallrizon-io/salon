@@ -1,3 +1,4 @@
+from django.utils.crypto import get_random_string
 from rest_framework import serializers
 from .models import Company
 from ..master.serializers import MasterDetailSerializer
@@ -18,8 +19,6 @@ class CompanyDetailSerializer(serializers.ModelSerializer):
 
 
 class CreateCompanySerializer(serializers.ModelSerializer):
-    new_company = False
-
     class Meta:
         model = Company
         fields = ('name', 'address', 'enter_code')
@@ -32,4 +31,5 @@ class CreateCompanySerializer(serializers.ModelSerializer):
         }
 
     def create(self, validated_data):
-        return Company.objects.create(**validated_data)
+        enter_code = get_random_string(length=5).lower()
+        return Company.objects.create(**validated_data, enter_code=enter_code)

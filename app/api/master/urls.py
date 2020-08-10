@@ -1,8 +1,8 @@
 from django.urls import path
-from .views import MasterListView, MasterBookedHoursView
+from .views import MasterAPIView, MasterBookedHoursView
 
 
 urlpatterns = [
-    path('masters/', MasterListView.as_view()),
+    path('masters/', MasterAPIView.as_view()),
     path('masters/<int:pk>/', MasterBookedHoursView.as_view()),
 ]

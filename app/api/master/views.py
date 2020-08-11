@@ -7,12 +7,12 @@ from django.utils.formats import date_format
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
-from ..company.models import Company
-from ..company.serializers import CreateCompanySerializer
-from ..profile.models import Profile
-from ..profile.serializers import CreateProfileSerializer
-from ..reception.models import Reception
-from ..reception.serializers import BookedHoursSerializer
+from api.company.models import Company
+from api.company.serializers import CreateCompanySerializer
+from api.profile.models import Profile
+from api.profile.serializers import CreateProfileSerializer
+from api.reception.models import Reception
+from api.reception.serializers import BookedHoursSerializer
 from .models import Master
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,6 +25,8 @@ class MasterAPIView(APIView):
         serializer = MasterListSerializer(masters, many=True)
         return Response(serializer.data)
 
+
+class CreateMasterView(APIView):
     def post(self, request, *args, **kwargs):
         profile_serializer = CreateProfileSerializer(
             user_type=Profile.UserType.MASTER, data=request.data.get('profile')

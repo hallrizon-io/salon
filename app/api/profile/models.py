@@ -8,7 +8,7 @@ from django.contrib.auth.models import AbstractUser
 
 class Profile(AbstractUser):
     def __str__(self):
-        return self.full_name + ' ({})'.format({1: 'Client', 2: 'Master'}[self.user_type])
+        return f'{self.full_name} ({self.client_type})'
 
     class UserType(models.IntegerChoices):
         CLIENT = 1
@@ -20,7 +20,7 @@ class Profile(AbstractUser):
 
     @property
     def full_name(self):
-        return self.first_name + ' ' + self.last_name
+        return f'{self.first_name} {self.last_name}'
 
     @property
     def age(self):
@@ -28,6 +28,10 @@ class Profile(AbstractUser):
         born = self.birth_date
         today = date.today()
         return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+
+    @property
+    def client_type(self):
+        return {1: "Client", 2: "Master"}[self.user_type]
 
     class Meta:
         verbose_name = 'Profile'

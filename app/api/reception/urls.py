@@ -1,7 +1,7 @@
 from django.urls import path
-from .views import ReceptionListView
+from .views import ReceptionAPIView
 
 
 urlpatterns = [
-    path('receptions/', ReceptionListView.as_view()),
+    path('receptions/', ReceptionAPIView.as_view()),
 ]

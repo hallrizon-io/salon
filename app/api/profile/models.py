@@ -15,7 +15,7 @@ class Profile(AbstractUser):
         MASTER = 2
 
     user_type = models.IntegerField(choices=UserType.choices, default=UserType.CLIENT)
-    birth_date = models.DateField()
+    birth_date = models.DateField(null=True, blank=True, default=None)
     phone = models.CharField(max_length=15, blank=True)
 
     @property

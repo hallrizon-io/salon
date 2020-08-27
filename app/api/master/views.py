@@ -13,6 +13,7 @@ from api.profile.models import Profile
 from api.profile.serializers import CreateProfileSerializer
 from api.reception.models import Reception
 from api.reception.serializers import BookedHoursSerializer
+from main.service import DefaultPagination
 from .models import Master
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -22,8 +23,9 @@ from .serializers import MasterListSerializer, WorkTypeListSerializer
 class MasterAPIView(APIView):
     def get(self, request, *args, **kwargs):
         masters = Master.objects.all()
-        serializer = MasterListSerializer(masters, many=True)
-        return Response(serializer.data)
+        paginator = DefaultPagination()
+        serializer = MasterListSerializer(paginator.paginate_queryset(masters, request), many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class CreateMasterView(APIView):

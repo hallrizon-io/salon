@@ -1,6 +1,7 @@
 # Create your views here.
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from main.service import DefaultPagination
 from .models import Company
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -12,8 +13,9 @@ class CompanyListView(APIView):
     @method_decorator(cache_page(60 * 60))
     def get(self, request):
         companies = Company.objects.all()
-        serializer = CompanyListSerializer(companies, many=True)
-        return Response(serializer.data)
+        paginator = DefaultPagination()
+        serializer = CompanyListSerializer(paginator.paginate_queryset(companies, request), many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class CompanyDetailView(APIView):

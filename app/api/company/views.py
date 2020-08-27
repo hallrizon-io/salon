@@ -1,3 +1,4 @@
+from main.service import DefaultPagination
 from .models import Company
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -10,8 +11,9 @@ from django.shortcuts import get_object_or_404
 class CompanyListView(APIView):
     def get(self, request):
         companies = Company.objects.all()
-        serializer = CompanyListSerializer(companies, many=True)
-        return Response(serializer.data)
+        paginator = DefaultPagination()
+        serializer = CompanyListSerializer(paginator.paginate_queryset(companies, request), many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 
 class CompanyDetailView(APIView):

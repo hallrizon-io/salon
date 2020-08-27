@@ -3,7 +3,9 @@ from datetime import datetime, timedelta, date
 
 from django.db import transaction
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
 from django.utils.formats import date_format
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 
@@ -20,7 +22,8 @@ from rest_framework.views import APIView
 from .serializers import MasterListSerializer, WorkTypeListSerializer
 
 
-class MasterAPIView(APIView):
+class MasterListView(APIView):
+    @method_decorator(cache_page(60 * 60))
     def get(self, request, *args, **kwargs):
         masters = Master.objects.all()
         paginator = DefaultPagination()

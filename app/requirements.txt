@@ -17,6 +17,7 @@ cssselect==1.1.0
 decorator==4.4.2
 dicttoxml==1.7.4
 Django==3.1
+django-redis==4.12.1
 djangorestframework==3.11.0
 djangorestframework-jwt==1.11.0
 docutils==0.16
@@ -38,6 +39,7 @@ MarkupSafe==1.1.1
 maxminddb==2.0.2
 mccabe==0.6.1
 multidict==4.7.6
+numpy==1.19.1
 packaging==20.4
 pandas==1.1.0
 Pillow==7.2.0
@@ -52,9 +54,11 @@ PyJWT==1.7.1
 pylint==2.5.3
 pyparsing==2.4.7
 pyquery==1.4.1
+python-dateutil==2.8.1
 pytz==2020.1
 ratelim==0.1.6
 readme-renderer==26.0
+redis==3.5.3
 requests==2.24.0
 requests-toolbelt==0.9.1
 rfc3986==1.4.0

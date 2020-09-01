@@ -110,3 +110,4 @@ ENV/
 # files
 *.png
 app/static/databases
+app/static/other

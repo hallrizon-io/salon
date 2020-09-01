@@ -1,14 +1,11 @@
+# Create your views here.
 from rest_framework import status
 from rest_framework.serializers import ValidationError
-
 from .models import Profile
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import ProfileListSerializer, CreateProfileSerializer
 from objects.ip import IP
-
-
-# Create your views here.
 
 
 class ProfileAPIView(APIView):

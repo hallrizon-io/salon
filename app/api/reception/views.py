@@ -19,9 +19,10 @@ class ReceptionAPIView(APIView):
             reception_serializer.is_valid(raise_exception=True)
 
             reception = reception_serializer.save()
+
             response = {
                 'id': reception.id,
-                'service_type': reception.service.name,
+                'service_name': reception.service.name,
                 'master': reception.master.profile.full_name,
                 'start_time': reception.start_datetime,
                 'end_time': reception.end_datetime

@@ -1,25 +1,20 @@
 # Create your views here.
 from datetime import datetime, timedelta, date
-
-from django.db import transaction
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.utils.formats import date_format
 from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-
-from api.company.models import Company
-from api.company.serializers import CreateCompanySerializer
-from api.profile.models import Profile
-from api.profile.serializers import CreateProfileSerializer
 from api.reception.models import Reception
 from api.reception.serializers import BookedHoursSerializer
 from main.service import DefaultPagination
+from .managers import MasterViewManager
 from .models import Master
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import MasterListSerializer, WorkTypeListSerializer
+from .serializers import MasterListSerializer
 
 
 class MasterListView(APIView):
@@ -33,29 +28,9 @@ class MasterListView(APIView):
 
 class CreateMasterView(APIView):
     def post(self, request, *args, **kwargs):
-        profile_serializer = CreateProfileSerializer(
-            user_type=Profile.UserType.MASTER, data=request.data.get('profile')
-        )
-        work_types_serializer = WorkTypeListSerializer(data=request.data)
-        company_serializer = CreateCompanySerializer(data=request.data.get('company'))
+        master_view_manager = MasterViewManager(request)
         try:
-            profile_serializer.is_valid(raise_exception=True)
-            work_types_serializer.is_valid(raise_exception=True)
-            with transaction.atomic():
-                if request.data.get('new_company', False):
-                    company_serializer.is_valid(raise_exception=True)
-                    company = company_serializer.save()
-                else:
-                    company = get_object_or_404(
-                        Company, enter_code=request.data.get('company').get('enter_code')
-                    )
-
-                master = Master.objects.create_master(
-                    profile=profile_serializer.save(),
-                    company=company,
-                    work_types=work_types_serializer.save()
-                )
-
+            master = master_view_manager.processing()
             response = {
                 'id': master.id,
                 'date_joined': date_format(master.profile.date_joined, 'DATETIME_FORMAT')
@@ -78,8 +53,8 @@ class MasterBookedHoursView(APIView):
         to_date = from_date + timedelta(days=1)
 
         receptions = master.receptions.filter(
-            status=Reception.Status.ACCEPTED,
-            time__range=(from_date, to_date)
+            Q(status=Reception.Status.BOOKED) | Q(status=Reception.Status.ACCEPTED),
+            Q(start_timestamp__gte=from_date.timestamp()) & Q(start_timestamp__lt=to_date.timestamp())
         )
 
         serializer = BookedHoursSerializer(receptions, many=True)

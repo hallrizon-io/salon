@@ -1,11 +1,10 @@
 from abc import abstractmethod, ABC
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-
-
-def validate_feedback_mark(value):
-    if value not in [x/2 for x in range(0, 11)]:
-        raise ValidationError({'mark': 'Incorrect mark value'})
+from api.reception.models import Reception
+from api.reception.models import Feedback
+from api.company.models import Company
+from api.profile.models import Profile
 
 
 class FeedbackManager:
@@ -56,9 +55,6 @@ class ReceptionStrategy(Strategy, ABC):
     required = ('reception_id', 'mark')
 
     def give_feedback(self):
-        from api.reception.models import Reception
-        from api.reception.models import Feedback
-
         reception = Reception.objects.get(pk=self.reception_id)
         feedback, is_created = Feedback.objects.update_or_create(
             reception=reception, defaults={'mark': self.mark}
@@ -70,9 +66,6 @@ class CompanyStrategy(Strategy, ABC):
     required = ('client_id', 'company_id', 'mark')
 
     def give_feedback(self):
-        from api.company.models import Company
-        from api.profile.models import Profile
-
         company = Company.objects.get(pk=self.company_id)
         profile = Profile.objects.get(pk=self.client_id)
         feedback, is_created = company.feedbacks.update_or_create(

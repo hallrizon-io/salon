@@ -3,7 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import objects.feedback
+import main.validators
 
 
 class Migration(migrations.Migration):
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             name='Feedback',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('mark', models.DecimalField(decimal_places=1, max_digits=2, validators=[objects.feedback.validate_feedback_mark])),
+                ('mark', models.DecimalField(decimal_places=1, max_digits=2, validators=[main.validators.validate_feedback_mark])),
                 ('client', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='companies_assessment', to=settings.AUTH_USER_MODEL)),
                 ('company', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='feedbacks', to='company.company')),
             ],

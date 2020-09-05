@@ -1,6 +1,6 @@
 from django.db import models
 from api.reception.models.reception import Reception
-from objects.feedback import validate_feedback_mark
+from main.validators import validate_feedback_mark
 
 
 class Feedback(models.Model):

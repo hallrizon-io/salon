@@ -1,10 +1,9 @@
 from django.db import models
 from rest_framework.exceptions import ValidationError
-
 from api.company.models.company import Company
 from api.profile.models import Profile
-from objects.feedback import validate_feedback_mark
 from api.reception.models import Reception
+from main.validators import validate_feedback_mark
 
 
 class Feedback(models.Model):

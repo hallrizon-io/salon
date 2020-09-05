@@ -23,6 +23,7 @@ INSTALLED_APPS = [
 
     'api',
     'api.company',
+    'api.feedback',
     'api.master',
     'api.profile',
     'api.reception',

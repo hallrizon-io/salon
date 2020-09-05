@@ -11,7 +11,7 @@ from api.reception.models import Reception
 from api.reception.serializers import BookedHoursSerializer
 from main.service import DefaultPagination
 from .managers import MasterViewManager
-from .models import Master
+from .models.master import Master
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import MasterListSerializer

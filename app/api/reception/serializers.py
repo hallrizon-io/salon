@@ -6,7 +6,7 @@ from .models import Reception
 from api.master.serializers import MasterDetailSerializer
 from api.profile.serializers import ProfileDetailSerializer
 from api.company.models import Company
-from api.master.models import Master
+from api.master.models.master import Master
 from api.profile.models import Profile
 
 

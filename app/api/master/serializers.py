@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-from .models import Master, WorkTypes
+from .models.master import Master
+from .models.worktypes import WorkTypes
 from api.profile.serializers import ProfileDetailSerializer
 from api.service.models import Service
 

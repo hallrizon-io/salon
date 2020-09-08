@@ -1,6 +1,7 @@
 # Register your models here.
 from django.contrib import admin
-from .models import Master, WorkTypes
+from .models.master import Master
+from .models.worktypes import WorkTypes
 
 
 class WorkTypesInline(admin.TabularInline):

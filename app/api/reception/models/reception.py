@@ -1,14 +1,13 @@
-# Create your models here.
 from datetime import datetime
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.contrib import admin
 from django.db.models import Q
 from django.utils.formats import date_format
+from rest_framework.exceptions import ValidationError
 from api.company.models import Company
 from api.master.models import Master
-from api.service.models import Service
 from api.profile.models import Profile
-from api.reception.filters import DatePeriodListFilter
+from api.service.models import Service
 
 
 class ReceptionManager(models.Manager):
@@ -22,6 +21,16 @@ class ReceptionManager(models.Manager):
             Q(start_timestamp__gte=start_timestamp) & Q(start_timestamp__lt=end_timestamp) |
             Q(end_timestamp__gte=start_timestamp) & Q(end_timestamp__lt=end_timestamp)
         ).exists()
+
+    @staticmethod
+    def is_reception_exist(reception_id, raise_exception=True):
+        is_exist = False
+        try:
+            is_exist = Reception.objects.filter(pk=reception_id, status=Reception.Status.ACCEPTED).exists()
+        except ObjectDoesNotExist:
+            if raise_exception:
+                raise ValidationError({'reception_id': "The current reception doesn't exist"})
+        return is_exist
 
 
 class Reception(models.Model):
@@ -55,10 +64,3 @@ class Reception(models.Model):
     @property
     def end_datetime(self):
         return date_format(datetime.fromtimestamp(self.end_timestamp), 'DATETIME_FORMAT')
-
-
-class ReceptionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'status', 'service', 'client','master', 'start_datetime',
-                    'end_datetime')
-    list_display_links = ('id',)
-    list_filter = (DatePeriodListFilter, 'status', 'company', 'service')

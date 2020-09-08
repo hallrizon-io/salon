@@ -2,7 +2,7 @@ from django.db import transaction
 from rest_framework.generics import get_object_or_404
 from api.company.models import Company
 from api.company.serializers import CreateCompanySerializer
-from api.master.models import Master
+from api.master.models.master import Master
 from api.master.serializers import CreateWorkTypesSerializer
 from api.profile.models import Profile
 from api.profile.serializers import CreateProfileSerializer

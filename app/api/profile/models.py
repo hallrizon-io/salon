@@ -1,6 +1,8 @@
 # Create your models here.
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from rest_framework.exceptions import ValidationError
 
 
 class Profile(AbstractUser):
@@ -29,6 +31,16 @@ class Profile(AbstractUser):
     @property
     def client_type(self):
         return {1: "Client", 2: "Master"}[self.user_type]
+
+    @staticmethod
+    def is_profile_exist(client_id, raise_exception=False):
+        is_exist = False
+        try:
+            is_exist = Profile.objects.filter(pk=client_id, is_active=True).exists()
+        except ObjectDoesNotExist:
+            if raise_exception:
+                raise ValidationError({'client_id': "The current client doesn't exist"})
+        return is_exist
 
     class Meta:
         verbose_name = 'Profile'

@@ -6,7 +6,7 @@ from .models import Reception
 from api.master.serializers import MasterDetailSerializer
 from api.profile.serializers import ProfileDetailSerializer
 from api.company.models import Company
-from api.master.models import Master
+from api.master.models.master import Master
 from api.profile.models import Profile
 
 
@@ -21,7 +21,7 @@ class ReceptionListSerializer(serializers.ModelSerializer):
     time_from = serializers.CharField(source='start_datetime')
     time_to = serializers.CharField(source='end_datetime')
 
-    class Meta():
+    class Meta:
         model = Reception
         exclude = ('start_timestamp', 'end_timestamp', 'created_at', 'updated_at')
 

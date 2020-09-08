@@ -1,9 +1,9 @@
-from datetime import datetime, date, timedelta
-
+from datetime import datetime, date
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
-
-# Create your models here.
+from django.db.models import Window, Avg, F
+from rest_framework.exceptions import ValidationError
 
 
 class Company(models.Model):
@@ -18,7 +18,7 @@ class Company(models.Model):
             message='Incorrect enter_code, available symbols (a-z, 0-9)'
         ),
     ])
-    active = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "Company"
@@ -26,6 +26,32 @@ class Company(models.Model):
 
     def __str__(self):
         return self.name
+
+    @staticmethod
+    def is_company_exist(company_id, raise_exception=False):
+        is_exist = False
+        try:
+            is_exist = Company.objects.filter(pk=company_id, is_active=True).exists()
+        except ObjectDoesNotExist:
+            if raise_exception:
+                raise ValidationError({'company_id': "The current company doesn't exist"})
+        return is_exist
+
+    @staticmethod
+    def all_with_calculated_rating(order=None):
+        companies = Company.objects.annotate(
+            rating=Window(
+                expression=Avg('feedbacks__mark'),
+                partition_by=[F('id')]
+            )
+        ).distinct()
+
+        if order:
+            sort_by_rating = lambda x: F('rating').asc(nulls_last=True) if x == 'asc' else F('rating').desc(
+                nulls_last=True)
+            companies = companies.order_by(sort_by_rating(order))
+
+        return companies
 
     def is_working_hours(self, start_timestamp, end_timestamp):
         reception_day = date.fromtimestamp(start_timestamp)

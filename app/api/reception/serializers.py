@@ -21,7 +21,7 @@ class ReceptionListSerializer(serializers.ModelSerializer):
     time_from = serializers.CharField(source='start_datetime')
     time_to = serializers.CharField(source='end_datetime')
 
-    class Meta():
+    class Meta:
         model = Reception
         exclude = ('start_timestamp', 'end_timestamp', 'created_at', 'updated_at')
 

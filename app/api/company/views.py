@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 class CompanyListView(APIView):
     @method_decorator(cache_page(60 * 60))
     def get(self, request):
-        companies = Company.objects.all()
+        companies = Company.all_with_calculated_rating(order=request.query_params.get('sort_by_rating', 'desc'))
         paginator = DefaultPagination()
         serializer = CompanyListSerializer(paginator.paginate_queryset(companies, request), many=True)
         return paginator.get_paginated_response(serializer.data)

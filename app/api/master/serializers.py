@@ -50,7 +50,7 @@ class MasterListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Master
-        fields = '__all__'
+        fields = ('id', 'profile', 'company', 'work_types', 'ratings')
 
 
 class MasterDetailSerializer(serializers.ModelSerializer):

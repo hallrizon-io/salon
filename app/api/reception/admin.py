@@ -7,7 +7,8 @@ from .models.reception import Reception
 
 @admin.register(Reception)
 class ReceptionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'status', 'service', 'client', 'master', 'start_datetime', 'end_datetime')
+    list_display = ('id', 'status', 'service', 'client', 'master',
+                    'company', 'start_datetime', 'end_datetime')
     list_display_links = ('id',)
     list_filter = (DatePeriodListFilter, 'status', 'company', 'service')
 

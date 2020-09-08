@@ -1,8 +1,8 @@
 from datetime import datetime, date
-
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import Window, Avg, F
 from rest_framework.exceptions import ValidationError
 
 
@@ -36,6 +36,22 @@ class Company(models.Model):
             if raise_exception:
                 raise ValidationError({'company_id': "The current company doesn't exist"})
         return is_exist
+
+    @staticmethod
+    def all_with_calculated_rating(order=None):
+        companies = Company.objects.annotate(
+            rating=Window(
+                expression=Avg('feedbacks__mark'),
+                partition_by=[F('id')]
+            )
+        ).distinct()
+
+        if order:
+            sort_by_rating = lambda x: F('rating').asc(nulls_last=True) if x == 'asc' else F('rating').desc(
+                nulls_last=True)
+            companies = companies.order_by(sort_by_rating(order))
+
+        return companies
 
     def is_working_hours(self, start_timestamp, end_timestamp):
         reception_day = date.fromtimestamp(start_timestamp)

@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from .yasg import urlpatterns as auto_documentation_urls
+import debug_toolbar
 
 from main import settings
 
@@ -32,3 +33,4 @@ urlpatterns += auto_documentation_urls
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += [path('__debug__/', include(debug_toolbar.urls))]

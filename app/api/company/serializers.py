@@ -5,9 +5,12 @@ from api.master.serializers import MasterDetailSerializer
 
 
 class CompanyListSerializer(serializers.ModelSerializer):
+    rating = serializers.DecimalField(max_digits=2, decimal_places=1)
+
     class Meta:
         model = Company
-        exclude = ('id', 'image')
+        fields = ('id', 'name', 'address', 'rating', 'opening_hours',
+                  'closing_hours', 'image', 'enter_code', 'is_active')
 
 
 class CompanyDetailSerializer(serializers.ModelSerializer):

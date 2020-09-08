@@ -1,14 +1,13 @@
+# Create your models here.
 from datetime import datetime
 from django.db import models
 from django.contrib import admin
 from django.db.models import Q
 from django.utils.formats import date_format
-
 from api.company.models import Company
-from api.master.models import Master, WorkTypes
+from api.master.models import Master
+from api.service.models import Service
 from api.profile.models import Profile
-
-# Create your models here.
 from api.reception.filters import DatePeriodListFilter
 
 
@@ -22,7 +21,7 @@ class ReceptionManager(models.Manager):
             Q(status__in=(Reception.Status.ACCEPTED, Reception.Status.BOOKED)),
             Q(start_timestamp__gte=start_timestamp) & Q(start_timestamp__lt=end_timestamp) |
             Q(end_timestamp__gte=start_timestamp) & Q(end_timestamp__lt=end_timestamp)
-        ).values('id').__bool__()
+        ).exists()
 
 
 class Reception(models.Model):
@@ -35,7 +34,7 @@ class Reception(models.Model):
     start_timestamp = models.PositiveBigIntegerField(db_index=True, null=True)
     end_timestamp = models.PositiveBigIntegerField(null=True)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.BOOKED)
-    service = models.ForeignKey(WorkTypes, on_delete=models.DO_NOTHING, related_name='receptions')
+    service = models.ForeignKey(Service, on_delete=models.DO_NOTHING, related_name='receptions')
     client = models.ForeignKey(Profile, on_delete=models.DO_NOTHING, related_name='receptions')
     company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='receptions')
     master = models.ForeignKey(Master, on_delete=models.DO_NOTHING, related_name='receptions')

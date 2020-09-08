@@ -1,21 +1,18 @@
-from django.contrib.auth.hashers import make_password
+# Create your models here.
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 
-# Create your models here.
-
-
 class Profile(AbstractUser):
     def __str__(self):
-        return f'{self.full_name} ({self.client_type})'
+        return f'{self.full_name}'
 
     class UserType(models.IntegerChoices):
         CLIENT = 1
         MASTER = 2
 
     user_type = models.IntegerField(choices=UserType.choices, default=UserType.CLIENT)
-    birth_date = models.DateField(null=True, blank=True, default=None)
+    birth_date = models.DateField(null=True)
     phone = models.CharField(max_length=15, blank=True)
 
     @property

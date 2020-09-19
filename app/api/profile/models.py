@@ -1,8 +1,10 @@
 # Create your models here.
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.crypto import get_random_string
+from django.utils.formats import date_format
 from rest_framework.exceptions import ValidationError
+from faker import Faker
 
 
 class Profile(AbstractUser):
@@ -34,13 +36,26 @@ class Profile(AbstractUser):
 
     @staticmethod
     def is_profile_exist(client_id, raise_exception=False):
-        is_exist = False
-        try:
-            is_exist = Profile.objects.filter(pk=client_id, is_active=True).exists()
-        except ObjectDoesNotExist:
-            if raise_exception:
-                raise ValidationError({'client_id': "The current client doesn't exist"})
+        is_exist = Profile.objects.filter(pk=client_id, is_active=True).exists()
+        if raise_exception and not is_exist:
+            raise ValidationError({'client_id': "The current client doesn't exist"})
         return is_exist
 
+    @classmethod
+    def create_random_profile(cls):
+        faker = Faker()
+        profile = faker.profile(fields=('name', 'birthdate', ''))
+        first_name, last_name, *other = profile['name'].split(' ', 2)
+        email = faker.ascii_safe_email()
+        return cls.objects.create_user(
+            username=email,
+            password=get_random_string(length=12).lower(),
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            birth_date=date_format(profile['birthdate'], 'DATE_FORMAT')
+        )
+
     class Meta:
+        ordering = ('-id',)
         verbose_name = 'Profile'

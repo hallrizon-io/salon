@@ -1,7 +1,7 @@
 # Create your views here.
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from main.service import DefaultPagination
+from main.services import DefaultPagination
 from .models import Company
 from rest_framework.response import Response
 from rest_framework.views import APIView

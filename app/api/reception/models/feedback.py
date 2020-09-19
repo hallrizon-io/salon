@@ -8,6 +8,5 @@ class Feedback(models.Model):
     mark = models.DecimalField(max_digits=2, decimal_places=1, validators=[validate_feedback_mark])
 
     def save(self, **kwargs):
-        Reception.objects.is_reception_exist(self.reception_id, raise_exception=True)
         self.full_clean()
         super(Feedback, self).save(**kwargs)

@@ -1,13 +1,14 @@
-from datetime import datetime, date
-from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime, date, time
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Window, Avg, F
+from django.utils.crypto import get_random_string
+from faker import Faker
 from rest_framework.exceptions import ValidationError
 
 
 class Company(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=50)
     address = models.CharField(max_length=100)
     opening_hours = models.TimeField()
     closing_hours = models.TimeField()
@@ -29,12 +30,9 @@ class Company(models.Model):
 
     @staticmethod
     def is_company_exist(company_id, raise_exception=False):
-        is_exist = False
-        try:
-            is_exist = Company.objects.filter(pk=company_id, is_active=True).exists()
-        except ObjectDoesNotExist:
-            if raise_exception:
-                raise ValidationError({'company_id': "The current company doesn't exist"})
+        is_exist = Company.objects.filter(pk=company_id, is_active=True).exists()
+        if raise_exception and not is_exist:
+            raise ValidationError({'company_id': "The current company doesn't exist"})
         return is_exist
 
     @staticmethod
@@ -52,6 +50,17 @@ class Company(models.Model):
             companies = companies.order_by(sort_by_rating(order))
 
         return companies
+
+    @classmethod
+    def create_random_company(cls):
+        faker = Faker()
+        return cls.objects.create(
+            name=faker.company(),
+            address=faker.street_address(),
+            opening_hours=time(10, 0),
+            closing_hours=time(18, 0),
+            enter_code=get_random_string(length=5).lower()
+        )
 
     def is_working_hours(self, start_timestamp, end_timestamp):
         reception_day = date.fromtimestamp(start_timestamp)

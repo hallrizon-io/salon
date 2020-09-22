@@ -1,7 +1,7 @@
-from django.utils.crypto import get_random_string
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from .models import Company
-from api.master.serializers import MasterDetailSerializer
+from api.master.serializers.master_detail import MasterDetailSerializer
 
 
 class CompanyListSerializer(serializers.ModelSerializer):
@@ -25,7 +25,29 @@ class CreateCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = ('name', 'address', 'opening_hours', 'closing_hours')
+        extra_kwargs = {
+            'name': {'allow_blank': False, 'required': False},
+            'address': {'allow_blank': False, 'required': False},
+            'opening_hours': {'required': False},
+            'closing_hours': {'required': False},
+        }
 
-    def create(self, validated_data):
-        enter_code = get_random_string(length=5).lower()
-        return Company.objects.create(**validated_data, enter_code=enter_code)
+    def validate(self, attrs):
+        request = dict(attrs)
+        request.update(self.context)
+
+        if request.get('new_company', False):
+            required_fields = self.fields.keys()
+        else:
+            required_fields = ['enter_code']
+
+        for field in required_fields:
+            if field not in request.keys():
+                raise ValidationError({field: 'This field is required.'})
+            elif not request[field]:
+                raise ValidationError({field: 'This field may not be blank.'})
+
+        if 'enter_code' in required_fields and not Company.objects.filter(enter_code=request.get('enter_code')).exists():
+            raise ValidationError({'enter_code': 'Not found company by current enter_code'})
+
+        return request

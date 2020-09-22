@@ -1,10 +1,9 @@
 import re
 from datetime import datetime
-
 from django.utils.formats import date_format
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator, UniqueTogetherValidator
-
+from main.validators import validate_contains_numbers
 from .models import Profile
 
 
@@ -22,10 +21,10 @@ class ProfileListSerializer(serializers.ModelSerializer):
         return date_format(obj.birth_date, 'DATE_FORMAT') if obj.birth_date else ''
 
     def get_last_login(self, obj):
-        return obj.last_login.strftime('%Y-%m-%d %H:%M:%S') if isinstance(obj.last_login, datetime) else ''
+        return date_format(obj.last_login, 'DATETIME_FORMAT') if isinstance(obj.last_login, datetime) else ''
 
     def get_date_joined(self, obj):
-        return obj.date_joined.strftime('%Y-%m-%d %H:%M:%S')
+        return date_format(obj.date_joined, 'DATETIME_FORMAT')
 
 
 class ProfileDetailSerializer(serializers.ModelSerializer):
@@ -39,9 +38,10 @@ class CreateProfileSerializer(serializers.ModelSerializer):
         model = Profile
         fields = ('first_name', 'last_name', 'birth_date', 'email', 'phone', 'password')
         extra_kwargs = {
-            'first_name': {'allow_blank': False, 'required': True},
-            'last_name': {'allow_blank': False, 'required': True},
+            'first_name': {'allow_blank': False, 'required': True, 'validators': [validate_contains_numbers]},
+            'last_name': {'allow_blank': False, 'required': True, 'validators': [validate_contains_numbers]},
             'email': {
+                'allow_blank': False,
                 'required': True,
                 'min_length': 8,
                 'validators': [UniqueValidator(queryset=Profile.objects.all())]
@@ -57,16 +57,6 @@ class CreateProfileSerializer(serializers.ModelSerializer):
     def __init__(self, user_type, **kwargs):
         self.user_type = user_type
         super(CreateProfileSerializer, self).__init__(**kwargs)
-
-    def validate_first_name(self, value):
-        if any(map(str.isdigit, value)):
-            raise serializers.ValidationError('The first name contains numbers')
-        return value
-
-    def validate_last_name(self, value):
-        if any(map(str.isdigit, value)):
-            raise serializers.ValidationError('The last name contains numbers')
-        return value
 
     def validate_birth_date(self, value):
         if value >= datetime.now().date():

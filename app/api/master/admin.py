@@ -1,11 +1,11 @@
 # Register your models here.
 from django.contrib import admin
 from .models.master import Master
-from .models.worktypes import WorkTypes
+from .models.worktype import WorkType
 
 
 class WorkTypesInline(admin.TabularInline):
-    model = WorkTypes
+    model = WorkType
     extra = 0
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -23,4 +23,4 @@ class MasterAdmin(admin.ModelAdmin):
         return super(MasterAdmin, self).get_form(request, obj, **kwargs)
 
 
-admin.site.register(WorkTypes)
+admin.site.register(WorkType)

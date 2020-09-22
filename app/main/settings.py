@@ -112,7 +112,9 @@ USE_L10N = False
 
 USE_TZ = True
 
-DATETIME_FORMAT = 'Y-m-d H:i'
+DATETIME_FORMAT = 'Y-m-d H:i:s'
+
+DATETIME_FORMAT_WITHOUT_SECONDS = 'Y-m-d H:i'
 
 DATE_FORMAT = 'Y-m-d'
 
@@ -160,3 +162,5 @@ CACHES = {
 INTERNAL_IPS = [
     '127.0.0.1',
 ]
+
+FIXTURE_DIRS = (os.path.join(BASE_DIR, 'static', 'fixtures'),)

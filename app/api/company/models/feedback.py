@@ -1,8 +1,6 @@
 from django.db import models
-from rest_framework.exceptions import ValidationError
 from api.company.models.company import Company
 from api.profile.models import Profile
-from api.reception.models import Reception
 from main.validators import validate_feedback_mark
 
 
@@ -15,9 +13,5 @@ class Feedback(models.Model):
         unique_together = ['company', 'client']
 
     def save(self, **kwargs):
-        Company.is_company_exist(self.company_id, raise_exception=True)
-        Profile.is_profile_exist(self.client_id, raise_exception=True)
-        if not Reception.objects.filter(company=self.company_id, client=self.client_id).exists():
-            raise ValidationError({'client_id': 'Ops, you cannot leave feedback because you never used our services'})
         self.full_clean()
         super(Feedback, self).save(**kwargs)

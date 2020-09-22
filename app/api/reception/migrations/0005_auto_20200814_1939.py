@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='reception',
             name='service',
-            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.DO_NOTHING, related_name='receptions', to='master.worktypes'),
+            field=models.ForeignKey(default=1, on_delete=django.db.models.deletion.DO_NOTHING, related_name='receptions', to='service.service'),
             preserve_default=False,
         ),
         migrations.AddField(

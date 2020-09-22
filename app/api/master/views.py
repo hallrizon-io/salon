@@ -9,12 +9,12 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from api.reception.models import Reception
 from api.reception.serializers import BookedHoursSerializer
-from main.service import DefaultPagination
+from main.services import DefaultPagination
 from .managers import MasterViewManager
 from .models.master import Master
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import MasterListSerializer
+from .serializers.master_list import MasterListSerializer
 
 
 class MasterListView(APIView):
@@ -29,6 +29,7 @@ class MasterListView(APIView):
 class CreateMasterView(APIView):
     def post(self, request, *args, **kwargs):
         master_view_manager = MasterViewManager(request)
+        status_code = status.HTTP_201_CREATED
         try:
             master = master_view_manager.processing()
             response = {
@@ -37,8 +38,9 @@ class CreateMasterView(APIView):
             }
         except ValidationError as error:
             response = error.detail
+            status_code = error.status_code
 
-        return Response(response)
+        return Response(response, status=status_code)
 
 
 class MasterBookedHoursView(APIView):
@@ -57,6 +59,7 @@ class MasterBookedHoursView(APIView):
             Q(start_timestamp__gte=from_date.timestamp()) & Q(start_timestamp__lt=to_date.timestamp())
         )
 
-        serializer = BookedHoursSerializer(receptions, many=True)
+        paginator = DefaultPagination()
+        serializer = BookedHoursSerializer(paginator.paginate_queryset(receptions, request), many=True)
 
-        return Response(serializer.data)
+        return paginator.get_paginated_response(serializer.data)

@@ -27,6 +27,7 @@ class FeedbackManager:
             raise ValidationError({param: f'Missing required parameter "{param}"' for param in missing_params})
 
     def execute(self):
+        self.strategy.validate()
         self.strategy.give_feedback()
         return self.strategy.get_response()
 
@@ -36,6 +37,10 @@ class Strategy:
 
     @abstractmethod
     def give_feedback(self):
+        pass
+
+    @abstractmethod
+    def validate(self):
         pass
 
     def set_request(self, request):
@@ -61,6 +66,9 @@ class ReceptionStrategy(Strategy, ABC):
         )
         self.is_created = is_created
 
+    def validate(self):
+        Reception.objects.is_reception_exist(self.reception_id, raise_exception=True)
+
 
 class CompanyStrategy(Strategy, ABC):
     required = ('client_id', 'company_id', 'mark')
@@ -72,3 +80,9 @@ class CompanyStrategy(Strategy, ABC):
             client=profile, company=company, defaults={'mark': self.mark}
         )
         self.is_created = is_created
+
+    def validate(self):
+        Profile.is_profile_exist(self.client_id, raise_exception=True)
+        Company.is_company_exist(self.company_id, raise_exception=True)
+        if not Reception.objects.filter(company=self.company_id, client=self.client_id).exists():
+            raise ValidationError({'client_id': 'Ops, you cannot leave feedback because you never used our services'})

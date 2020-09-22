@@ -2,6 +2,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from main.services import DefaultPagination
 from .models import Reception
 from .serializers import ReceptionListSerializer, CreateReceptionSerializer
 
@@ -9,8 +10,9 @@ from .serializers import ReceptionListSerializer, CreateReceptionSerializer
 class ReceptionAPIView(APIView):
     def get(self, request, *args, **kwargs):
         receptions = Reception.objects.all()
-        serializer = ReceptionListSerializer(receptions, many=True)
-        return Response(serializer.data)
+        paginator = DefaultPagination()
+        serializer = ReceptionListSerializer(paginator.paginate_queryset(receptions, request), many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         reception_serializer = CreateReceptionSerializer(data=request.data)

@@ -48,9 +48,6 @@ class ReceptionManager(models.Manager):
             status=Reception.Status.BOOKED
         ).update(price=master_price, status=Reception.Status.ACCEPTED, updated_at=timezone.now())
 
-        # from api.reception.models.reception import Reception
-        # Reception.objects.update_completed_receptions()
-
 
 class Reception(models.Model):
     class Meta:

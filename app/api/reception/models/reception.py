@@ -1,11 +1,12 @@
 from datetime import datetime, timedelta, time
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, OuterRef, Subquery, F, Case, When
+from django.utils import timezone
 from django.utils.formats import date_format
 from faker import Faker
 from rest_framework.exceptions import ValidationError
 from api.company.models import Company
-from api.master.models import Master
+from api.master.models import Master, WorkType
 from api.profile.models import Profile
 from api.service.models import Service
 
@@ -29,6 +30,27 @@ class ReceptionManager(models.Manager):
             raise ValidationError({'reception_id': "The current reception doesn't exist"})
         return is_exist
 
+    def update_completed_receptions(self):
+        work_type = WorkType.objects.filter(master=OuterRef('master'), company=OuterRef('company'), service=OuterRef('service'))
+        master_price = Subquery(
+            work_type.annotate(
+                price=Case(
+                    When(Q(price_from__gt=0) | Q(price_to__gt=0), then=(F('price_from') + F('price_to')) / 2.0),
+                    default=0.00
+                )
+            ).values('price')
+        )
+
+        now = datetime.now().timestamp()
+        self.filter(
+            end_timestamp__gt=now - timedelta(minutes=5).seconds,
+            end_timestamp__lte=now,
+            status=Reception.Status.BOOKED
+        ).update(price=master_price, status=Reception.Status.ACCEPTED, updated_at=timezone.now())
+
+        # from api.reception.models.reception import Reception
+        # Reception.objects.update_completed_receptions()
+
 
 class Reception(models.Model):
     class Meta:
@@ -47,6 +69,7 @@ class Reception(models.Model):
     client = models.ForeignKey(Profile, on_delete=models.DO_NOTHING, related_name='receptions')
     company = models.ForeignKey(Company, on_delete=models.DO_NOTHING, related_name='receptions')
     master = models.ForeignKey(Master, on_delete=models.DO_NOTHING, related_name='receptions')
+    price = models.DecimalField(max_digits=7, decimal_places=2, default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

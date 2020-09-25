@@ -46,7 +46,7 @@ class Profile(AbstractUser):
         faker = Faker()
         profile = faker.profile(fields=('name', 'birthdate', ''))
         first_name, last_name, *other = profile['name'].split(' ', 2)
-        email = faker.ascii_safe_email()
+        email = f'{first_name.lower()}.{last_name.lower()}@{faker.free_email_domain()}'
         return cls.objects.create_user(
             username=email,
             password=get_random_string(length=12).lower(),

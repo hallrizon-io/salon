@@ -2,6 +2,8 @@
 import os
 import datetime
 
+from celery.schedules import crontab
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'jhh4$$5143-%py7rtzbx-_$w0)7db$flwaeg)m78#)xb7q@ka4'
@@ -104,7 +106,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kiev'
 
 USE_I18N = True
 
@@ -140,6 +142,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 25
 }
 
+# JWT Authorization
 JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
@@ -148,6 +151,7 @@ JWT_AUTH = {
     'JWT_AUTH_HEADER_PREFIX': 'Bearer',
 }
 
+# Cache
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -163,4 +167,21 @@ INTERNAL_IPS = [
     '127.0.0.1',
 ]
 
+# Fixtures
 FIXTURE_DIRS = (os.path.join(BASE_DIR, 'static', 'fixtures'),)
+
+# Celery
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/1'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_BEAT_SCHEDULE = {
+    'create-random-profile': {
+        'task': 'api.profile.tasks.create_random_profile',
+        'schedule': crontab(minute=0, hour=0),
+    },
+    'update-completed-receptions': {
+        'task': 'api.reception.tasks.update_completed_receptions',
+        'schedule': crontab(minute="*/5"),
+    },
+}

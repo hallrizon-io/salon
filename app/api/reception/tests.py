@@ -18,7 +18,7 @@ class ReceptionListViewTest(BaseViewTest, TestCase):
         self.uri = 'receptions'
         self.required_attributes = {
             'non_nested': ['id', 'client', 'master', 'company', 'service', 'updated',
-                           'created', 'time_from', 'time_to', 'description', 'status'],
+                           'created', 'time_from', 'time_to', 'description', 'status', 'price'],
             'nested': {
                 'client': ['id', 'first_name', 'last_name', 'age'],
                 'master': ['id', 'first_name', 'last_name', 'age'],

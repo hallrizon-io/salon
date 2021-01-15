@@ -33,6 +33,7 @@ class MasterListView(APIView):
 
 
 class CreateMasterView(APIView):
+    permission_classes = []
     def post(self, request, *args, **kwargs):
         master_view_manager = MasterViewManager(request)
         status_code = status.HTTP_201_CREATED

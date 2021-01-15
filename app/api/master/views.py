@@ -7,18 +7,24 @@ from django.utils.formats import date_format
 from django.views.decorators.cache import cache_page
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
-from api.reception.models import Reception
-from api.reception.serializers import BookedHoursSerializer
-from main.services import DefaultPagination
-from .managers import MasterViewManager
-from .models.master import Master
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers.master_list import MasterListSerializer
+
+from api.reception.models import Reception
+from api.reception.serializers import BookedHoursSerializer
+
+from main.services import DefaultPagination
+
+from .managers import MasterViewManager
+from .models.master import Master
+from .models.worktype import WorkType
+from .serializers.master_list import MasterListSerializer, WorkTypesListSerializer
+
+from rest_framework import viewsets, generics
 
 
 class MasterListView(APIView):
-    @method_decorator(cache_page(60 * 60))
+
     def get(self, request, *args, **kwargs):
         masters = Master.objects.all()
         paginator = DefaultPagination()
@@ -63,3 +69,11 @@ class MasterBookedHoursView(APIView):
         serializer = BookedHoursSerializer(paginator.paginate_queryset(receptions, request), many=True)
 
         return paginator.get_paginated_response(serializer.data)
+
+
+class WorkTypesViewSet(viewsets.GenericViewSet,
+                       viewsets.mixins.CreateModelMixin,
+                       viewsets.mixins.ListModelMixin,
+                       ):
+    serializer_class = WorkTypesListSerializer
+    queryset = WorkType.objects.all()

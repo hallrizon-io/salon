@@ -23,4 +23,5 @@ class WorkTypeSerializer(serializers.ModelSerializer):
         try:
             datetime.strptime(value, "%H:%M:%S")
         except TypeError:
-            raise ValidationError({'work_type':  {'duration': 'Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'}})
+            raise ValidationError({'work_type': {
+                'duration': 'Duration has wrong format. Use one of these formats instead: [DD] [HH:[MM:]]ss[.uuuuuu].'}})
